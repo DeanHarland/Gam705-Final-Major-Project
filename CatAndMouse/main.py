@@ -4,20 +4,7 @@ import math
 import os
 import sys
 import wall
-
-
-# Colour
-black = (0,0,0)
-
-# Player
-playerSprite = pygame.image.load('monster.png')
-playerX = 1500
-playerY = 100
-playerXSpeed = 0.5
-playerYSpeed = 0.5
-
-def drawPlayer(x,y):
-    screenWindow.blit(playerSprite, (round(x),round(y)))
+import character
 
 # Open a window on screen
 screenHeight = 900
@@ -28,6 +15,43 @@ screenWindow.fill((30, 90, 30))
 # Title
 pygame.display.set_caption("Cat And Mouse")
 
+# Colour
+black = (0,0,0)
+
+
+# Player
+
+playerX = screenWidth - 100
+playerY = 100
+
+class Player(pygame.sprite.Sprite):
+
+    def __init__(self,x,y):
+
+        super().__init__()
+
+        self.playerXSpeed = 0.5
+        self.playerYSpeed = 0.5
+        self.walls = None
+
+        self.image = pygame.image.load('monster.png')
+        self.rect = self.image.get_rect()
+        self.rect.y = y
+        self.rect.x = x
+        self.canLeft = True
+        self.canRight = True
+
+
+    def drawPlayer(self,x,y):
+        screenWindow.blit(self.image, (round(x), round(y)))
+
+
+player = Player(30,30)
+player.rect.x = playerX
+player.rect.y = playerY
+
+
+pygame.init()
 # Game over/restart
 gameOVer = False
 
@@ -38,22 +62,46 @@ pressed_up = False
 pressed_down = False
 
 
+
 # Walls
 WALLS = pygame.sprite.Group()
 
 wall1 = wall.Wall(0,0,screenWidth,10,black,screenWindow)
-wall2 = wall.Wall(0,(screenHeight-10),screenWidth,10,black,screenWindow)
-wall3 = wall.Wall(0,0,10,screenHeight,black,screenWindow)
-wall4 = wall.Wall((screenWidth-10),0,10,screenHeight,black,screenWindow)
+WALLS.add(wall1)
+wall1 = wall.Wall(0,(screenHeight-10),screenWidth,10,black,screenWindow)
+WALLS.add(wall1)
+wall1 = wall.Wall(0,0,10,screenHeight,black,screenWindow)
+WALLS.add(wall1)
+wall1 = wall.Wall((screenWidth-10),0,10,screenHeight,black,screenWindow)
+WALLS.add(wall1)
 
-WALLS.add(wall1,wall2,wall3,wall4)
+def checkWallCollision(direction):
+    for wall in WALLS:
+        if direction == pressed_right:
+            if player.rect.colliderect(wall):
+               # player.playerXSpeed = 0
+                player.canRight = False
 
 
+        if direction == pressed_left:
+            if player.rect.colliderect(wall):
+              #  player.playerXSpeed = 0
+                player.canLeft = False
+
+
+'''
+def checkWallCollision(playerX, playerY, wallX, wallY):
+    distance = math.sqrt((math.pow(wallX - playerX, 2)) + (math.pow(wallY - playerY, 2)))
+    if distance < 28:
+        return True
+    else:
+        return False
+'''
 
 # # # Main game loop # # #
-pygame.init()
 
 
+player.walls = WALLS
 
 running = True
 while running:
@@ -86,19 +134,39 @@ while running:
                 pressed_down = False
 
     if pressed_left:
-        playerX -= playerXSpeed
+
+        checkWallCollision(pressed_left)
+        if player.canLeft == True:
+            player.playerXSpeed = 0.5
+            playerX -= player.playerXSpeed
+            player.canRight = True
+
+        elif player.canRight == False:
+            player.playerXSpeed = 0.5
+            playerX -= player.playerXSpeed
+            player.canRight = True
+
+
     if pressed_right:
-        playerX += playerXSpeed
+        checkWallCollision(pressed_right)
+        if player.canRight == True:
+            player.playerXSpeed = 0.5
+            playerX += player.playerXSpeed
+            player.canLeft = True
+
+        elif player.canLeft == False:
+            player.playerXSpeed = 0.5
+            playerX += player.playerXSpeed
+            player.canLeft = True
+
     if pressed_up:
-        playerY -= playerYSpeed
+        playerY -= player.playerYSpeed
     if pressed_down:
-        playerY += playerYSpeed
+        playerY += player.playerYSpeed
 
-
-
-
-
-    drawPlayer(playerX,playerY)
+    player.drawPlayer(playerX,playerY)
+    player.rect.x = playerX
+    player.rect.y = playerY
 
     for wall in WALLS:
         wall.draw()
