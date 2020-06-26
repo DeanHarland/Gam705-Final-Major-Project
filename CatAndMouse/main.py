@@ -8,7 +8,7 @@ import character
 
 # Open a window on screen
 screenHeight = 900
-screenWidth = 1600
+screenWidth = 1000
 screenWindow = pygame.display.set_mode([screenWidth, screenHeight])
 screenWindow.fill((30, 90, 30))
 
@@ -20,18 +20,17 @@ black = (0,0,0)
 
 
 # Player
-
 playerX = screenWidth - 100
 playerY = 100
 
-class Player(pygame.sprite.Sprite):
 
+class Player(pygame.sprite.Sprite):
     def __init__(self,x,y):
 
         super().__init__()
 
-        self.playerXSpeed = 0.5
-        self.playerYSpeed = 0.5
+        self.playerXSpeed = 0
+        self.playerYSpeed = 0
         self.walls = None
 
         self.image = pygame.image.load('monster.png')
@@ -61,9 +60,9 @@ pressed_right = False
 pressed_up = False
 pressed_down = False
 
+clock = pygame.time.Clock()
 
-
-# Walls
+# Walls - created a group and add each instance of wall to it.
 WALLS = pygame.sprite.Group()
 
 wall1 = wall.Wall(0,0,screenWidth,10,black,screenWindow)
@@ -74,19 +73,34 @@ wall1 = wall.Wall(0,0,10,screenHeight,black,screenWindow)
 WALLS.add(wall1)
 wall1 = wall.Wall((screenWidth-10),0,10,screenHeight,black,screenWindow)
 WALLS.add(wall1)
+wall1 = wall.Wall(0,0,800,screenHeight,black,screenWindow)
+WALLS.add(wall1)
+
 
 def checkWallCollision(direction):
-    for wall in WALLS:
-        if direction == pressed_right:
-            if player.rect.colliderect(wall):
-               # player.playerXSpeed = 0
-                player.canRight = False
+    # Check If colliding with wall for which ever direction is pressed.
 
+    for wall in WALLS:
 
         if direction == pressed_left:
             if player.rect.colliderect(wall):
-              #  player.playerXSpeed = 0
                 player.canLeft = False
+                print("cant move left")
+
+            #if not player.rect.colliderect(wall):
+               # player.canLeft = True
+
+        if direction == pressed_right:
+            if player.rect.colliderect(wall):
+                player.canRight = False
+                print("cant move right")
+
+            #if not player.rect.colliderect(wall):
+               # player.canRight = True
+
+
+
+
 
 
 '''
@@ -116,8 +130,10 @@ while running:
         elif event.type == pygame.KEYDOWN:  # check for key presses
             if event.key == pygame.K_LEFT:
                 pressed_left = True
+                player.playerXSpeed = 3
             elif event.key == pygame.K_RIGHT:
                 pressed_right = True
+                player.playerXSpeed = 3
             elif event.key == pygame.K_UP:
                 pressed_up = True
             elif event.key == pygame.K_DOWN:
@@ -126,43 +142,59 @@ while running:
         elif event.type == pygame.KEYUP:  # check for key releases
             if event.key == pygame.K_LEFT:
                 pressed_left = False
+                player.playerXSpeed = 0
             elif event.key == pygame.K_RIGHT:
                 pressed_right = False
+                player.playerXSpeed = 0
             elif event.key == pygame.K_UP:
                 pressed_up = False
             elif event.key == pygame.K_DOWN:
                 pressed_down = False
 
+
     if pressed_left:
 
-        checkWallCollision(pressed_left)
-        if player.canLeft == True:
-            player.playerXSpeed = 0.5
-            playerX -= player.playerXSpeed
-            player.canRight = True
 
-        elif player.canRight == False:
-            player.playerXSpeed = 0.5
+        checkWallCollision(pressed_left)
+
+        if player.canLeft == True:
             playerX -= player.playerXSpeed
-            player.canRight = True
+
+       # if player.canRight == False:
+           # playerX -= player.playerXSpeed
+
+        print("can right = " , player.canRight)
+        print("can left = " , player.canLeft)
+
 
 
     if pressed_right:
-        checkWallCollision(pressed_right)
-        if player.canRight == True:
-            player.playerXSpeed = 0.5
-            playerX += player.playerXSpeed
-            player.canLeft = True
 
-        elif player.canLeft == False:
-            player.playerXSpeed = 0.5
+
+        checkWallCollision(pressed_right)
+
+        if player.canRight == True:
             playerX += player.playerXSpeed
-            player.canLeft = True
+
+        #if player.canLeft == False:
+            #playerX += player.playerXSpeed
+
+            #player.canLeft = True
+
+        print("can right = ", player.canRight)
+        print("can left = ", player.canLeft)
+
+
 
     if pressed_up:
         playerY -= player.playerYSpeed
+
     if pressed_down:
         playerY += player.playerYSpeed
+
+
+    #player.canLeft = False
+    #player.canRight = False
 
     player.drawPlayer(playerX,playerY)
     player.rect.x = playerX
@@ -172,3 +204,4 @@ while running:
         wall.draw()
 
     pygame.display.update()
+    clock.tick(60)
