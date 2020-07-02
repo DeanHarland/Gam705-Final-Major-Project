@@ -37,6 +37,10 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.y = y
         self.rect.x = x
+
+        self.isCollide = False
+
+        #removable?
         self.canLeft = True
         self.canRight = True
 
@@ -64,17 +68,22 @@ clock = pygame.time.Clock()
 
 # Walls - created a group and add each instance of wall to it.
 WALLS = pygame.sprite.Group()
+# X,Y,Height,Width,Height,Colour,Screen.
 
-wall1 = wall.Wall(0,0,screenWidth,10,black,screenWindow)
+wall1 = wall.Wall(0,0,screenWidth,20,black,screenWindow)                    #top wall
 WALLS.add(wall1)
-wall1 = wall.Wall(0,(screenHeight-10),screenWidth,10,black,screenWindow)
-WALLS.add(wall1)
-wall1 = wall.Wall(0,0,10,screenHeight,black,screenWindow)
-WALLS.add(wall1)
-wall1 = wall.Wall((screenWidth-10),0,10,screenHeight,black,screenWindow)
-WALLS.add(wall1)
-wall1 = wall.Wall(0,0,800,screenHeight,black,screenWindow)
-WALLS.add(wall1)
+
+wall2 = wall.Wall(0,(screenHeight-10),screenWidth,20,black,screenWindow)        #bot wall
+WALLS.add(wall2)
+
+wall3 = wall.Wall(0,0,10,screenHeight,black,screenWindow)
+WALLS.add(wall3)
+
+wall4 = wall.Wall((screenWidth-50),0,30,screenHeight,black,screenWindow)        #right wall
+WALLS.add(wall4)
+
+wall5 = wall.Wall(0,0,400,screenHeight,black,screenWindow)                       # big wall
+WALLS.add(wall5)
 
 
 def checkWallCollision(direction):
@@ -90,7 +99,7 @@ def checkWallCollision(direction):
             #if not player.rect.colliderect(wall):
                # player.canLeft = True
 
-        if direction == pressed_right:
+        elif direction == pressed_right:
             if player.rect.colliderect(wall):
                 player.canRight = False
                 print("cant move right")
@@ -99,8 +108,17 @@ def checkWallCollision(direction):
                # player.canRight = True
 
 
+player.walls = WALLS
 
+def checkForWalls():
 
+    for wall in WALLS:
+
+        if player.rect.colliderect(wall):
+            player.isCollide = True
+
+        if not player.rect.colliderect(wall):
+            player.isCollide = False
 
 
 '''
@@ -115,7 +133,7 @@ def checkWallCollision(playerX, playerY, wallX, wallY):
 # # # Main game loop # # #
 
 
-player.walls = WALLS
+
 
 running = True
 while running:
@@ -136,9 +154,10 @@ while running:
                 player.playerXSpeed = 3
             elif event.key == pygame.K_UP:
                 pressed_up = True
+                player.playerYSpeed = 3
             elif event.key == pygame.K_DOWN:
                 pressed_down = True
-
+                player.playerYSpeed = 3
         elif event.type == pygame.KEYUP:  # check for key releases
             if event.key == pygame.K_LEFT:
                 pressed_left = False
@@ -148,53 +167,53 @@ while running:
                 player.playerXSpeed = 0
             elif event.key == pygame.K_UP:
                 pressed_up = False
+                player.playerYSpeed = 0
             elif event.key == pygame.K_DOWN:
                 pressed_down = False
+                player.playerYSpeed = 0
 
 
     if pressed_left:
 
-
-        checkWallCollision(pressed_left)
-
-        if player.canLeft == True:
-            playerX -= player.playerXSpeed
-
-       # if player.canRight == False:
-           # playerX -= player.playerXSpeed
-
-        print("can right = " , player.canRight)
-        print("can left = " , player.canLeft)
-
+        playerX -= player.playerXSpeed
+        player.rect.x = playerX
+        player.rect.y = playerY
+        checkForWalls()
+        if player.isCollide == True:
+            playerX += player.playerXSpeed
+            #checkForWalls()
+        print(player.isCollide)
 
 
     if pressed_right:
 
-
-        checkWallCollision(pressed_right)
-
-        if player.canRight == True:
-            playerX += player.playerXSpeed
-
-        #if player.canLeft == False:
-            #playerX += player.playerXSpeed
-
-            #player.canLeft = True
-
-        print("can right = ", player.canRight)
-        print("can left = ", player.canLeft)
-
-
+        playerX += player.playerXSpeed
+        player.rect.x = playerX
+        player.rect.y = playerY
+        checkForWalls()
+        if player.isCollide == True:
+            playerX -= player.playerXSpeed
+            #checkForWalls()
+        print(player.isCollide)
 
     if pressed_up:
         playerY -= player.playerYSpeed
+        player.rect.x = playerX
+        player.rect.y = playerY
+        checkForWalls()
+        if player.isCollide == True:
+            playerY += player.playerYSpeed
+            #checkForWalls()
 
     if pressed_down:
         playerY += player.playerYSpeed
+        player.rect.x = playerX
+        player.rect.y = playerY
+        checkForWalls()
+        if player.isCollide == True:
+            playerY -= player.playerYSpeed
+            #checkForWalls()
 
-
-    #player.canLeft = False
-    #player.canRight = False
 
     player.drawPlayer(playerX,playerY)
     player.rect.x = playerX

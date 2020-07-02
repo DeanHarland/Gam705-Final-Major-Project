@@ -15,8 +15,10 @@ class Wall(pygame.sprite.Sprite):
         self.image.fill(color)
 
         self.rect = self.image.get_rect()
+
         self.rect.y = y
         self.rect.x = x
+
 
 
 
