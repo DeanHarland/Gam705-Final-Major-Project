@@ -27,7 +27,7 @@ darkestBrown = (26, 9, 0)
 playerX = screenWidth - 100
 playerY = 100
 
-#Spike ability
+# Spike ability
 spikeImg = pygame.image.load("nail.png")
 spikeX = 0
 spikeY = playerY
@@ -61,13 +61,15 @@ class Player(pygame.sprite.Sprite):
         screenWindow.blit(self.image, (round(x), round(y)))
 
 def shootSpike(x, y):
-    global  spikeState
+
+    global spikeState
     spikeState = "fired"
     screenWindow.blit(spikeImg,(x,y))
 
-#def spikeCollision():
-    #for wall in WALLS:
-        #if spike
+
+# def spikeCollision():
+    # for wall in WALLS:
+        # if spike
 
 
 player = Player(30,30)
@@ -121,13 +123,13 @@ wall18 = wall.Wall((screenWidth-110),(screenHeight/3),100,20,dimGrey,screenWindo
 wall19 = wall.Wall((screenWidth/4*3+20),(screenHeight/4*3),100,20,dimGrey,screenWindow)
 wall20 = wall.Wall((screenWidth-110),(screenHeight/4*3),100,20,dimGrey,screenWindow)
 # MID SIDE?
-wall13 = wall.Wall((screenWidth/4+60),screenHeight/4,(screenWidth/2-40),20,dimGrey,screenWindow)  #top mid
-wall14 = wall.Wall((screenWidth/4 ),screenHeight/4*3,(screenWidth/2),20,dimGrey,screenWindow)  #bottom mid
-WALLS.add(wall1,wall2,wall3,wall4,wall5,wall14,wall15,wall25,wall26,wall22,wall24,wall28,wall21,wall23,wall10,wall11,wall12,wall17,wall18,wall19,wall20,wall13,wall14)
+wall13 = wall.Wall((screenWidth/4+60),screenHeight/4,(screenWidth/2-40),20,dimGrey,screenWindow)  # top mid
+wall14 = wall.Wall((screenWidth/4 ),screenHeight/4*3,(screenWidth/2),20,dimGrey,screenWindow)  # bottom mid
+WALLS.add(wall1,wall2,wall3,wall4,wall5,wall14,wall15,wall25,wall26,wall22,wall24,wall28,wall21,wall23,wall10,wall11, wall12, wall17,wall18,wall19,wall20,wall13,wall14)
 player.walls = WALLS
 
 def drawFloors():
-    #pygame.draw.rect(screenWindow,dimGrey,[10,680,300,420])
+    # pygame.draw.rect(screenWindow,dimGrey,[10,680,300,420])
     pygame.draw.rect(screenWindow, browner, [10, 680, 30, 300])
     pygame.draw.rect(screenWindow, brownerer, [40, 680, 30, 300])
     pygame.draw.rect(screenWindow, browner, [70, 680, 30, 300])
@@ -178,7 +180,7 @@ while running:
                 player.playerYSpeed = 3
             elif event.key == pygame.K_SPACE:
                 pressed_space = True
-                if spikeState is "ready":
+                if spikeState == "ready":
                     spikeX = playerX
                     spikeY = playerY
                     if pressed_left == True:
@@ -188,7 +190,7 @@ while running:
                         spikeXSpeed = spikePosSpeed
                         spikeX += 15
                     elif pressed_up == True:
-                        spikeYSpeed = -spikeNegSpeed
+                        spikeYSpeed = spikeNegSpeed
                         spikeY -= 15
                     elif pressed_down == True:
                         spikeYSpeed = spikePosSpeed
@@ -261,10 +263,23 @@ while running:
         #shootSpike(playerX, playerY)
 
        # spikeY -= spikeYSpeed
-    if spikeState is "fired":
+    spikeCollide = False
+    if spikeState == "fired":
         shootSpike(spikeX, spikeY)
         spikeX += spikeXSpeed
         spikeY += spikeYSpeed
+        spikeRect = pygame.Rect(spikeX, spikeY,30,30)
+        for wall in WALLS:
+
+            if spikeRect.colliderect(wall):
+                spikeCollide = True
+                spikeXSpeed = 0
+                spikeYSpeed = 0
+                spikeState = "ready"
+                break
+            if not spikeRect.colliderect(wall):
+                spikeCollide = False
+
 
 
 
