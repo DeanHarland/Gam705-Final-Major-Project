@@ -25,7 +25,9 @@ browner = (77, 34, 0)
 brownerer = (51, 17, 0)
 darkestBrown = (26, 9, 0)
 darkGreen = (0,51,0)
-
+blue = (51,153,255)
+darkBlue = (51,153,200)
+treeGreen = (0,153,0)
 # Player
 playerX = screenWidth - 100
 playerY = 100
@@ -82,7 +84,8 @@ def pounceAbility(x,y):
     upPounce = y - pounceDistance
     downPounce = y + pounceDistance
 
-
+# Use current X + pounce distance to determine jump distance? but how to make it jump? speed up?
+# Need sprint stamina for for loop?
 
 
 
@@ -131,9 +134,24 @@ wall88 = wall.Wall((screenWidth-110),(screenHeight/4*3-5),100,30,black,screenWin
 wall87 = wall.Wall((screenWidth/4+55),screenHeight/4-5,(screenWidth/2-40),30,black,screenWindow)  # top mid
 wall86 = wall.Wall((screenWidth/4 ),screenHeight/4*3-5,(screenWidth/2),30,black,screenWindow)  # bottom mid
 
+# Fountain
+wall85 = wall.Wall(screenWidth/2-80 ,screenHeight/2+45,160,30,black,screenWindow)
+wall84 = wall.Wall(screenWidth/2-80 ,screenHeight/2-55,160,30,black,screenWindow)
 
+wall83 = wall.Wall(screenWidth/2+40 ,screenHeight/2-50,30,120,black,screenWindow)
+wall82 = wall.Wall(screenWidth/2-70,screenHeight/2-50,30,120,black,screenWindow)
 
-DECWALL.add(wall99,wall98,wall97, wall96,wall95,wall94,wall93,wall92,wall91,wall90,wall89,wall88,wall87,wall86)
+wall81 = wall.Wall(screenWidth/2-50,screenHeight/2-50,100,100,blue,screenWindow)
+# Bench
+wall80 = wall.Wall(screenWidth/2+65 ,screenHeight/2-25,20,70,brown,screenWindow)
+wall79 = wall.Wall(screenWidth/2-85 ,screenHeight/2-25,20,70,brown,screenWindow)
+
+# Tree
+wall78 = wall.Wall(1100 ,200,70,70,black,screenWindow)
+wall77 = wall.Wall(1000 ,50,70,70,black,screenWindow)
+wall76 = wall.Wall(950 ,190,50,50,black,screenWindow)
+
+DECWALL.add(wall99,wall80,wall79,wall81,wall98,wall97, wall96,wall95,wall94,wall93,wall92,wall91,wall90,wall89,wall88,wall87,wall86,wall85,wall84,wall83,wall82, wall78,wall77, wall76)
 
 
 
@@ -171,7 +189,21 @@ wall20 = wall.Wall((screenWidth-110),(screenHeight/4*3),100,20,dimGrey,screenWin
 # MID SIDE?
 wall13 = wall.Wall((screenWidth/4+60),screenHeight/4,(screenWidth/2-40),20,dimGrey,screenWindow)  # top mid
 wall14 = wall.Wall((screenWidth/4 ),screenHeight/4*3,(screenWidth/2),20,dimGrey,screenWindow)  # bottom mid
-WALLS.add(wall1,wall2,wall3,wall4,wall5,wall14,wall15,wall25,wall26,wall22,wall24,wall28,wall21,wall23,wall10,wall11, wall12, wall17,wall18,wall19,wall20,wall13,wall16)
+
+# Fountain
+wall27 = wall.Wall(screenWidth/2-75 ,screenHeight/2+50,150,20,dimGrey1,screenWindow)
+wall28 = wall.Wall(screenWidth/2-75 ,screenHeight/2-50,150,20,dimGrey1,screenWindow)
+
+wall29 = wall.Wall(screenWidth/2+45 ,screenHeight/2-50,20,100,dimGrey1,screenWindow)
+wall30 = wall.Wall(screenWidth/2-65,screenHeight/2-50,20,100,dimGrey1,screenWindow)
+
+#Tree
+wall31 = wall.Wall(1105 ,205,60,60,treeGreen,screenWindow)
+wall32 = wall.Wall(1005 ,55,60,60,treeGreen,screenWindow)
+
+wall33 = wall.Wall(955 ,195,40,40,treeGreen,screenWindow)
+
+WALLS.add(wall1,wall2,wall3,wall4,wall5,wall14,wall15,wall25,wall26,wall22,wall24,wall28,wall21,wall23,wall10,wall11, wall12, wall17,wall18,wall19,wall20,wall13,wall16, wall27,wall28,wall29,wall30,wall31,wall32, wall33)
 player.walls = WALLS
 
 
@@ -197,7 +229,11 @@ def drawFloors():
     pygame.draw.rect(screenWindow, darkGreen, [1000, 200, 100, 280])
 
     # Middle Area
-    pygame.draw.rect(screenWindow, greyFloor, [300, 580, 600, 100])
+    pygame.draw.rect(screenWindow, greyFloor, [300, 580, 600, 100]) # B
+    pygame.draw.rect(screenWindow, greyFloor, [300, 240, 600, 100]) # T
+    pygame.draw.rect(screenWindow, greyFloor, [300, 240, 100, 400]) # L
+    pygame.draw.rect(screenWindow, greyFloor, [800, 240, 100, 400]) # R
+
 
 def checkForWalls():
 
