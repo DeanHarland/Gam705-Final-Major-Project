@@ -5,7 +5,10 @@ import os
 import sys
 import wall
 import character
+import time
 
+
+pygame.init()
 # Open a window on screen
 screenHeight = 900
 screenWidth = 1200
@@ -28,6 +31,22 @@ darkGreen = (0,51,0)
 blue = (51,153,255)
 darkBlue = (51,153,200)
 treeGreen = (0,153,0)
+pink = (255,105,180)
+
+# UI
+font = pygame.font.Font('freesansbold.ttf', 26)
+textX = 10
+textY = 10
+startTime = 0
+# Timer
+TIME = pygame.USEREVENT + 1
+pygame.time.set_timer(TIME, 1000)
+time = 0
+
+testClock = pygame.time.Clock()
+dt = testClock.tick()
+timeElaps = 0
+
 # Player
 playerX = screenWidth - 100
 playerY = 100
@@ -64,6 +83,11 @@ class Player(pygame.sprite.Sprite):
 
     def drawPlayer(self,x,y):
         screenWindow.blit(self.image, (round(x), round(y)))
+
+
+player = Player(30,30)
+player.rect.x = playerX
+player.rect.y = playerY
 # Abilities
 def shootSpike(x, y):
 # Shoots a spike out infront of the players movement
@@ -77,27 +101,91 @@ pounceLast = pygame.time.get_ticks()
 pounceCooldown = 3000
 pounceDistance = 100
 
-def pounceAbility(x,y):
-    print("pounce")
+def pounceAbility(x,y,direction):
+    print("prepounce")
     leftPounce = x - pounceDistance
     rightPounce = x + pounceDistance
     upPounce = y - pounceDistance
     downPounce = y + pounceDistance
-
+    global pounceLocationX
+    pounceLocationX = 0
+    global pounceLocationY
+    pounceLocationY = 0
+    if direction == "left":
+        print("left start")
+        pounceLocationX = x - pounceDistance
 # Use current X + pounce distance to determine jump distance? but how to make it jump? speed up?
 # Need sprint stamina for for loop?
+# Which direction? how will it know?
 
 
 
+class Mouse(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+
+        super().__init__()
+
+        self.mouseXSpeed = 0
+        self.mouseYSpeed = 0
+        self.walls = None
+
+        self.image = pygame.image.load('alien.png')
+        self.rect = self.image.get_rect()
+        self.rect.y = y
+        self.rect.x = x
+
+        self.isCollide = False
+    def drawMouse(self,x,y):
+        screenWindow.blit(self.image, (round(x), round(y)))
+
+mouseX = 50
+mouseY = 850
+mouse = Mouse(30,30)
+mouse.rect.x = mouseX
+mouse.rect.y = mouseY
+
+class Generator(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+
+        super().__init__()
+        activated = False
+        completed = False
+        self.image = pygame.image.load('generator.png')
+        self.rect = self.image.get_rect()
+        self.rect.y = y
+        self.rect.x = x
 
 
+def drawGenerator(self,x, y):
+    screenWindow.blit(self.image, (round(x), round(y)))
 
-player = Player(30,30)
-player.rect.x = playerX
-player.rect.y = playerY
+genX = 600
+genY = 50
+generator = Generator(30,30)
+generator.rect.x = genX
+generator.rect.y = genY
+
+class Generator2(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+
+        super().__init__()
+        activated = False
+        completed = False
+        self.image = pygame.image.load('generator.png')
+        self.rect = self.image.get_rect()
+        self.rect.y = y
+        self.rect.x = x
 
 
-pygame.init()
+def drawGenerator2(self,x, y):
+    screenWindow.blit(self.image, (round(x), round(y)))
+
+gen2X = 1150
+gen2Y = 775
+generator2 = Generator2(30,30)
+generator2.rect.x = gen2X
+generator2.rect.y = gen2Y
+
 # Game over/restart
 gameOVer = False
 
@@ -151,7 +239,35 @@ wall78 = wall.Wall(1100 ,200,70,70,black,screenWindow)
 wall77 = wall.Wall(1000 ,50,70,70,black,screenWindow)
 wall76 = wall.Wall(950 ,190,50,50,black,screenWindow)
 
-DECWALL.add(wall99,wall80,wall79,wall81,wall98,wall97, wall96,wall95,wall94,wall93,wall92,wall91,wall90,wall89,wall88,wall87,wall86,wall85,wall84,wall83,wall82, wall78,wall77, wall76)
+# Upper Mid
+wall75 = wall.Wall((screenWidth/4+195),20,30,75,black,screenWindow) # topleft
+wall74 = wall.Wall((screenWidth/4+395),20,30,75,black,screenWindow) # topright
+
+wall73 = wall.Wall((screenWidth/4+195),145,30,75,black,screenWindow) # BL
+wall72 = wall.Wall((screenWidth/4+395),145,30,75,black,screenWindow) #BR
+
+
+# bottom fences
+wall71 = wall.Wall(395,745,25,110,black,screenWindow) # L1
+wall70 = wall.Wall(495,745,25,110,black,screenWindow)
+wall69 = wall.Wall(695,745,25,110,black,screenWindow)
+wall68 = wall.Wall(795,745,25,110,black,screenWindow)
+
+# Middle left shop
+wall67 = wall.Wall(5,345,160,210,black,screenWindow)
+wall66 = wall.Wall(225,345,20,20,black,screenWindow)
+wall65 = wall.Wall(225,535,20,20,black,screenWindow)
+
+#house
+wall64 = wall.Wall((screenWidth/4-5),screenHeight/4*3-5,35,110,black,screenWindow)
+wall63 = wall.Wall((screenWidth/4-5),screenHeight-75,35,70,black,screenWindow)
+wall62 = wall.Wall(5,(screenHeight/4*3)-5,110,35,black,screenWindow)
+wall61 = wall.Wall((screenWidth/4-110)-5,(screenHeight/4*3)-5,120,35,black,screenWindow)
+
+wall60 = wall.Wall((screenWidth/4-100)-5,(screenHeight/4*3+90)-5,35,90,black,screenWindow)
+
+DECWALL.add(wall99,wall80,wall79,wall81,wall98,wall97, wall96,wall95,wall94,wall93,wall92,wall91,wall90,wall89,wall88,wall87,wall86,wall85,wall84,wall83,wall82, wall78,wall77, wall76,wall75,wall74,wall73,wall72,wall71,wall70,
+            wall69,wall68, wall67,wall66, wall65,wall64,wall63,wall62,wall61,wall60)
 
 
 
@@ -172,7 +288,7 @@ wall25 = wall.Wall((screenWidth/4),screenHeight/4*3,25,100,brown,screenWindow)
 wall26 = wall.Wall((screenWidth/4),screenHeight-70,25,60,brown,screenWindow)
 wall22 = wall.Wall(10,(screenHeight/4*3),100,25,brown,screenWindow)
 wall24 = wall.Wall((screenWidth/4-110),(screenHeight/4*3),110,25,brown,screenWindow)
-wall28 = wall.Wall((screenWidth/4-100),(screenHeight/4*3+90),25,80,brown,screenWindow)
+wall47 = wall.Wall((screenWidth/4-100),(screenHeight/4*3+90),25,80,brown,screenWindow)
 # left left side
 wall21 = wall.Wall(10,(screenHeight/4),100,20,dimGrey,screenWindow)
 wall23 = wall.Wall((screenWidth/4-110),(screenHeight/4),110,20,dimGrey,screenWindow)
@@ -188,7 +304,8 @@ wall19 = wall.Wall((screenWidth/4*3+20),(screenHeight/4*3),100,20,dimGrey,screen
 wall20 = wall.Wall((screenWidth-110),(screenHeight/4*3),100,20,dimGrey,screenWindow)
 # MID SIDE?
 wall13 = wall.Wall((screenWidth/4+60),screenHeight/4,(screenWidth/2-40),20,dimGrey,screenWindow)  # top mid
-wall14 = wall.Wall((screenWidth/4 ),screenHeight/4*3,(screenWidth/2),20,dimGrey,screenWindow)  # bottom mid
+wall14 = wall.Wall((screenWidth/4 ),screenHeight/4*3,270,20,dimGrey,screenWindow)  # bottom mid
+wall46 = wall.Wall((screenWidth/4+330 ),screenHeight/4*3,270,20,dimGrey,screenWindow)
 
 # Fountain
 wall27 = wall.Wall(screenWidth/2-75 ,screenHeight/2+50,150,20,dimGrey1,screenWindow)
@@ -203,7 +320,31 @@ wall32 = wall.Wall(1005 ,55,60,60,treeGreen,screenWindow)
 
 wall33 = wall.Wall(955 ,195,40,40,treeGreen,screenWindow)
 
-WALLS.add(wall1,wall2,wall3,wall4,wall5,wall14,wall15,wall25,wall26,wall22,wall24,wall28,wall21,wall23,wall10,wall11, wall12, wall17,wall18,wall19,wall20,wall13,wall16, wall27,wall28,wall29,wall30,wall31,wall32, wall33)
+# Upper Mid
+wall34 = wall.Wall((screenWidth/4+200),20,20,70,dimGrey,screenWindow) # topleft
+wall35 = wall.Wall((screenWidth/4+400),20,20,70,dimGrey,screenWindow) # topright
+
+wall36 = wall.Wall((screenWidth/4+200),150,20,70,dimGrey,screenWindow) # BL
+wall37 = wall.Wall((screenWidth/4+400),150,20,70,dimGrey,screenWindow) #BR
+
+# Fences
+wall38 = wall.Wall(400,750,15,100,darkestBrown,screenWindow)
+wall39 = wall.Wall(500,750,15,100,darkestBrown,screenWindow)
+wall40 = wall.Wall(700,750,15,100,darkestBrown,screenWindow)
+wall41 = wall.Wall(800,750,15,100,darkestBrown,screenWindow)
+
+
+# shop
+wall42 = wall.Wall(10,350,150,200,dimGrey1,screenWindow)
+wall43 = wall.Wall(230,350,10,10,dimGrey1,screenWindow)
+wall44 = wall.Wall(230,540,10,10,dimGrey1,screenWindow)
+wall45 = wall.Wall(150,450,20,70,black,screenWindow)
+
+# 46 used
+# 47used
+
+WALLS.add(wall1,wall2,wall3,wall4,wall5,wall14,wall15,wall25,wall26,wall22,wall24,wall28,wall21,wall23,wall10,wall11, wall12, wall17,wall18,wall19,wall20,wall13,wall16, wall27,wall28,wall29,wall30,wall31,wall32, wall33,wall34
+          ,wall35,wall36,wall37,wall38,wall39,wall40,wall41, wall42,wall43,wall44,wall45,wall46,wall47)
 player.walls = WALLS
 
 
@@ -233,7 +374,16 @@ def drawFloors():
     pygame.draw.rect(screenWindow, greyFloor, [300, 240, 600, 100]) # T
     pygame.draw.rect(screenWindow, greyFloor, [300, 240, 100, 400]) # L
     pygame.draw.rect(screenWindow, greyFloor, [800, 240, 100, 400]) # R
+    pygame.draw.rect(screenWindow, greyFloor, [500, 0, 220, 220])
 
+    pygame.draw.rect(screenWindow, greyFloor, [1100, 725, 200, 150])
+    pygame.draw.rect(screenWindow, dimGrey, [1140, 765, 50, 50])
+    # flowers?
+
+
+    # Shop
+    pygame.draw.rect(screenWindow, (20, 69, 20), [150, 350, 160, 200])
+    #20, 90, 20
 
 def checkForWalls():
 
@@ -246,6 +396,9 @@ def checkForWalls():
             player.isCollide = False
 
 
+def showTime(x,y):
+    timeText = font.render("Time: " + str(time),True,(0,0,0))
+    screenWindow.blit(timeText,(x,y))
 
 # # # Main game loop # # #
 
@@ -314,13 +467,22 @@ while running:
                     else:
                         spikeYSpeed = 4
                     shootSpike(spikeX, spikeY)
+                    # Pounce
             elif event.key == pygame.K_w:
                 pressed_W = True
+                print("Pressed")
                 now = pygame.time.get_ticks()
                 if now - pounceLast >= pounceCooldown:
                     pounceLast = now
-                    pounceAbility(playerX,playerY)
 
+
+                    #player.playerXSpeed = 5
+                            #pounceAbility(playerX, playerY, "left")
+                            #playerX = pounceLocationX
+
+
+        elif event.type == TIME:
+            time += 1
 
         elif event.type == pygame.KEYUP:  # check for key releases
             if event.key == pygame.K_LEFT:
@@ -375,7 +537,7 @@ while running:
             playerY -= player.playerYSpeed
 
     if pressed_W:
-        pounceAbility(playerX,playerY)
+        pass
 
     spikeCollide = False
     if spikeState == "fired":
@@ -393,18 +555,23 @@ while running:
             if not spikeRect.colliderect(wall):
                 spikeCollide = False
 
+    if player.rect.colliderect(generator):
+        print("Colldinng with no.1 ")
+    if player.rect.colliderect(generator2):
+        print("Colldinng with no.2 ")
 
 
 
-
-
+    drawGenerator(generator, genX, genY)
+    drawGenerator(generator, gen2X,gen2Y)
     player.drawPlayer(playerX,playerY)
+    Mouse.drawMouse(mouse, mouseX, mouseY)
     player.rect.x = playerX
     player.rect.y = playerY
     for wall in DECWALL:
         wall.draw()
     for wall in WALLS:
         wall.draw()
-
+    showTime(30,30)
     pygame.display.update()
     clock.tick(60)
