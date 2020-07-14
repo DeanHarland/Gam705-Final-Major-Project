@@ -502,6 +502,18 @@ while running:
             elif event.key == pygame.K_w:
                 pressed_W = False
 
+    # maybe get direction by using velocity if last X > new X, -X
+    if time >= 0:
+
+        if mouseX < gen2X:
+            mouseX += 2
+
+
+        if playerX <= (mouseX+60):
+            mouseX -= 2
+        if  playerX <= (mouseX-60):
+            mouseX += 2
+
 
 
     if pressed_left:
