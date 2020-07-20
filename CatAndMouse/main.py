@@ -8,6 +8,9 @@ import character
 import time
 
 
+import collections
+import heapq
+
 pygame.init()
 # Open a window on screen
 screenHeight = 900
@@ -400,13 +403,148 @@ def showTime(x,y):
     timeText = font.render("Time: " + str(time),True,(0,0,0))
     screenWindow.blit(timeText,(x,y))
 
-# # # Main game loop # # #
+# A Star
+'''
+all_nodes = []
+for x in range(20):
+    for y in range(10):
+        all_nodes.append([x, y])
+'''
+'''
+def neighbors(node):
+    dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+    result = []
+    for dir in dirs:
+        neighbor = [node[0] + dir[0], node[1] + dir[1]]
+        if neighbor in all_nodes:
+            result.append(neighbor)
+    return result
 
+# Need to remove nodes within walls.rect?
+# Could increase node weight of walls to 99999
+print(all_nodes)
+'''
+
+class PriorityQueue:
+    def __init__(self):
+        self.elements = []
+
+    def empty(self):
+        return len(self.elements) == 0
+
+    def put(self, item, priority):
+        heapq.heappush(self.elements, (priority, item))
+
+    def get(self):
+        return heapq.heappop(self.elements)[1]
+
+class SquareGrid:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.walls = []
+
+    def in_bounds(self, id):
+        (x, y) = id
+        return 0 <= x < self.width and 0 <= y < self.height
+
+    def passable(self, id):
+        return id not in self.walls
+
+    def neighbors(self, id):
+        (x, y) = id
+        results = [(x + 1, y), (x, y - 1), (x - 1, y), (x, y + 1)]
+        if (x + y) % 2 == 0: results.reverse()  # aesthetics
+        results = filter(self.in_bounds, results)
+        results = filter(self.passable, results)
+        return results
+
+
+def heuristic(a, b):
+    (x1, y1) = a
+    (x2, y2) = b
+    return abs(x1 - x2) + abs(y1 - y2)
+
+
+def a_star_search(graph, start, goal):
+    frontier = PriorityQueue()
+    frontier.put(start, 0)
+    came_from = {}
+    cost_so_far = {}
+    came_from[start] = None
+    cost_so_far[start] = 0
+
+    while not frontier.empty():
+        current = frontier.get()
+
+        if current == goal:
+            break
+
+        for next in graph.neighbors(current):
+            new_cost = cost_so_far[current] + graph.cost(current, next)
+            if next not in cost_so_far or new_cost < cost_so_far[next]:
+                cost_so_far[next] = new_cost
+                priority = new_cost + heuristic(goal, next)
+                frontier.put(next, priority)
+                came_from[next] = current
+
+    return came_from, cost_so_far
+
+
+class GridWithWeights(SquareGrid):
+    def __init__(self, width, height):
+        super().__init__(width, height)
+        self.weights = {}
+
+    def cost(self, from_node, to_node):
+        return self.weights.get(to_node, 1)
+
+g = GridWithWeights(120, 90 )
+# How to resemble graph to x,y
+
+start = ((round(playerX/10)), round(playerY/10))
+goal = (100,10)
+came_from, cost_so_far = a_star_search(g, start,goal)
+
+print(a_star_search(g, start, goal))
+
+
+'''
+all_nodes = []
+def drawGrid():
+    blockSize = 30 #Set the size of the grid block
+    for x in range(screenWidth):
+        for y in range(screenHeight):
+            rect = pygame.Rect(x*blockSize, y*blockSize,
+                               blockSize, blockSize)
+
+            all_nodes.append([rect])
+            rectX = x
+            rectY = y
+
+            pygame.draw.rect(screenWindow, black, rect, 1)
+drawGrid()
+
+def checkGridLocation():
+
+    for rect in all_nodes:
+
+        if player.rect.colliderect(wall):
+            player.isCollide = True
+            break
+        if not player.rect.colliderect(wall):
+            player.isCollide = False
+'''
+
+# # # Main game loop # # #
 running = True
 while running:
 
     screenWindow.fill((30, 90, 30))
     drawFloors()
+    #start = ((round(mouseX / 10)), round(mouseY / 10))
+    #print(start)
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -501,7 +639,7 @@ while running:
                 pressed_Q = False
             elif event.key == pygame.K_w:
                 pressed_W = False
-
+    '''
     # maybe get direction by using velocity if last X > new X, -X
     if time >= 0:
 
@@ -510,10 +648,10 @@ while running:
 
 
         if playerX <= (mouseX+60):
-            mouseX -= 2
+            mouseX -= 5
         if  playerX <= (mouseX-60):
             mouseX += 2
-
+    '''
 
 
     if pressed_left:
@@ -572,8 +710,6 @@ while running:
     if player.rect.colliderect(generator2):
         print("Colldinng with no.2 ")
 
-
-
     drawGenerator(generator, genX, genY)
     drawGenerator(generator, gen2X,gen2Y)
     player.drawPlayer(playerX,playerY)
@@ -585,5 +721,6 @@ while running:
     for wall in WALLS:
         wall.draw()
     showTime(30,30)
+
     pygame.display.update()
     clock.tick(60)
