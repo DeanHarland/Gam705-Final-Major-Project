@@ -404,26 +404,6 @@ def showTime(x,y):
     screenWindow.blit(timeText,(x,y))
 
 # A Star
-'''
-all_nodes = []
-for x in range(20):
-    for y in range(10):
-        all_nodes.append([x, y])
-'''
-'''
-def neighbors(node):
-    dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-    result = []
-    for dir in dirs:
-        neighbor = [node[0] + dir[0], node[1] + dir[1]]
-        if neighbor in all_nodes:
-            result.append(neighbor)
-    return result
-
-# Need to remove nodes within walls.rect?
-# Could increase node weight of walls to 99999
-print(all_nodes)
-'''
 
 class PriorityQueue:
     def __init__(self):
@@ -459,6 +439,15 @@ class SquareGrid:
         results = filter(self.passable, results)
         return results
 
+class GridWithWeights(SquareGrid):
+    def __init__(self, width, height):
+        super().__init__(width, height)
+        self.weights = {}
+
+    def cost(self, from_node, to_node):
+        return self.weights.get(to_node, 1)
+
+grid = GridWithWeights(120, 90 )
 
 def heuristic(a, b):
     (x1, y1) = a
@@ -478,6 +467,7 @@ def a_star_search(graph, start, goal):
         current = frontier.get()
 
         if current == goal:
+
             break
 
         for next in graph.neighbors(current):
@@ -488,63 +478,75 @@ def a_star_search(graph, start, goal):
                 frontier.put(next, priority)
                 came_from[next] = current
 
+
     return came_from, cost_so_far
 
 
-class GridWithWeights(SquareGrid):
-    def __init__(self, width, height):
-        super().__init__(width, height)
-        self.weights = {}
+start = ((round(mouseX / 10)), round(mouseY / 10))
+#start = ((round(playerX/10)), round(playerY/10))
+goal = (60,45)
+came_from, cost_so_far = a_star_search(grid, start,goal)
 
-    def cost(self, from_node, to_node):
-        return self.weights.get(to_node, 1)
+def reconstruct_path(came_from, start, goal):
+    current = goal
+    path = []
+    while current != start:
+        path.append(current)
+        current = came_from[current]
+    path.append(start) # optional
+    path.reverse() # optional
+    return path
 
-g = GridWithWeights(120, 90 )
-# How to resemble graph to x,y
+path =  reconstruct_path(came_from,start,goal)
 
-start = ((round(playerX/10)), round(playerY/10))
-goal = (100,10)
-came_from, cost_so_far = a_star_search(g, start,goal)
+print("A star: ",a_star_search(grid, start, goal))
+print("Path: ",path)
 
-print(a_star_search(g, start, goal))
+firstNode = path[1]
+
+print("First Node: ", firstNode)
+print("Goal: ", goal)
 
 
-'''
-all_nodes = []
-def drawGrid():
-    blockSize = 30 #Set the size of the grid block
-    for x in range(screenWidth):
-        for y in range(screenHeight):
-            rect = pygame.Rect(x*blockSize, y*blockSize,
-                               blockSize, blockSize)
-
-            all_nodes.append([rect])
-            rectX = x
-            rectY = y
-
-            pygame.draw.rect(screenWindow, black, rect, 1)
-drawGrid()
-
-def checkGridLocation():
-
-    for rect in all_nodes:
-
-        if player.rect.colliderect(wall):
-            player.isCollide = True
-            break
-        if not player.rect.colliderect(wall):
-            player.isCollide = False
-'''
 
 # # # Main game loop # # #
 running = True
 while running:
 
+
     screenWindow.fill((30, 90, 30))
     drawFloors()
-    #start = ((round(mouseX / 10)), round(mouseY / 10))
-    #print(start)
+    #start = ((round(playerX / 10)), round(playerY / 10))
+    start = ((round(mouseX / 10)), round(mouseY / 10))
+    mouseXNode = round(mouseX / 10)
+    mouseYNode = round(mouseY / 10)
 
+    a_star_search(grid,start,goal)
+    path = reconstruct_path(came_from, start, goal)
+    firstNode = path[1]
+    firstNodeX, firstNodeY = firstNode
+
+    if mouseXNode < firstNodeX:
+        mouseX += 2
+    elif mouseXNode > firstNodeX:
+        mouseX -= 2
+
+    if mouseYNode < firstNodeY:
+        mouseY += 2
+    elif mouseYNode > firstNodeY:
+        mouseY -= 2
+
+    if mouseXNode == firstNodeX:
+        #print("X hit")
+        pass
+    if mouseYNode == firstNodeY:
+        #print("Y hit")
+        pass
+
+
+
+
+    # Move then remove from array? or just redo a star all the time so its always moving to first node
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -608,7 +610,9 @@ while running:
                     # Pounce
             elif event.key == pygame.K_w:
                 pressed_W = True
-                print("Pressed")
+                print("Pressed W")
+                print(a_star_search(grid, start, goal))
+
                 now = pygame.time.get_ticks()
                 if now - pounceLast >= pounceCooldown:
                     pounceLast = now
