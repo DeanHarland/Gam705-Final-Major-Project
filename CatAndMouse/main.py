@@ -433,7 +433,7 @@ class SquareGrid:
 
     def neighbors(self, id):
         (x, y) = id
-        results = [(x + 1, y), (x, y - 1), (x - 1, y), (x, y + 1)]
+        results = [(x + 1, y), (x, y - 1), (x - 1, y), (x, y + 1),(x + 1, y + 1), (x+1,y-1), (x-1,y-1),(x-1, y+1) ]
         if (x + y) % 2 == 0: results.reverse()  # aesthetics
         results = filter(self.in_bounds, results)
         results = filter(self.passable, results)
@@ -447,7 +447,10 @@ class GridWithWeights(SquareGrid):
     def cost(self, from_node, to_node):
         return self.weights.get(to_node, 1)
 
+TESTWALLS = [(8,82)]
+
 grid = GridWithWeights(120, 90 )
+grid.walls = TESTWALLS
 
 def heuristic(a, b):
     (x1, y1) = a
