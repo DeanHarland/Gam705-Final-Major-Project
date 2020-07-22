@@ -350,10 +350,37 @@ WALLS.add(wall1,wall2,wall3,wall4,wall5,wall14,wall15,wall25,wall26,wall22,wall2
           ,wall35,wall36,wall37,wall38,wall39,wall40,wall41, wall42,wall43,wall44,wall45,wall46,wall47)
 player.walls = WALLS
 
+TESTWALLS = []
+# Width ones
+def makeWallNodes(x,y,width,height):
+    startX = round(x/10)
+    startY = round(y/10)
+    loopCountW = width/10
+    i = 1
+    while i < loopCountW:
 
-# LEFT SIDE
+        startX += 1
+        nodeXY = (startX, startY)
+        TESTWALLS.append(nodeXY)
+        #print(nodeXY)
+        i+= 1
+def makeHeightWallNodes(x,y,width,height):
+    startX = round(x/10)
+    startY = round(y/10)
+    loopCountH = height/10
+    i = 0
+    while i < loopCountH:
+
+        startY += 1
+        nodeXY = (startX, startY)
+        TESTWALLS.append(nodeXY)
+        #print(nodeXY)
+        i+= 1
 
 
+for wall in WALLS:
+    #makeWallNodes(wall.x,wall.y,wall.width,wall.height)
+    makeHeightWallNodes(wall.x, wall.y, wall.width, wall.height)
 
 
 def drawFloors():
@@ -447,10 +474,10 @@ class GridWithWeights(SquareGrid):
     def cost(self, from_node, to_node):
         return self.weights.get(to_node, 1)
 
-TESTWALLS = [(8,82)]
+#NODEWALLS = [(8,82)]
 
 grid = GridWithWeights(120, 90 )
-grid.walls = TESTWALLS
+grid.walls = TESTWALLS #NODEWALLS
 
 def heuristic(a, b):
     (x1, y1) = a
@@ -487,7 +514,8 @@ def a_star_search(graph, start, goal):
 
 start = ((round(mouseX / 10)), round(mouseY / 10))
 #start = ((round(playerX/10)), round(playerY/10))
-goal = (60,45)
+#goal = (playerX/10,playerY/10)
+goal = (10, 10)
 came_from, cost_so_far = a_star_search(grid, start,goal)
 
 def reconstruct_path(came_from, start, goal):
@@ -730,4 +758,4 @@ while running:
     showTime(30,30)
 
     pygame.display.update()
-    clock.tick(60)
+    #clock.tick(60)
