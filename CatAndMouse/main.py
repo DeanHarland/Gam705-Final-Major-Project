@@ -63,6 +63,18 @@ spikeYSpeed = 0
 spikeState = "ready"
 spikePosSpeed = 5
 spikeNegSpeed = -5
+
+# Timer
+TIME = pygame.USEREVENT + 1
+pygame.time.set_timer(TIME, 1000)
+time = 60
+# Game Over
+gameOverFont = pygame.font.Font('freesansbold.ttf', 64)
+
+def ShowGameOver(x,y):
+    gameOverText = gameOverFont.render(("Game Over"),True, (0, 0, 0))
+    screenWindow.blit(gameOverText,(x,y) )
+
 class Player(pygame.sprite.Sprite):
     def __init__(self,x,y):
 
@@ -72,7 +84,7 @@ class Player(pygame.sprite.Sprite):
         self.playerYSpeed = 0
         self.walls = None
 
-        self.image = pygame.image.load('monster.png')
+        self.image = pygame.image.load('Cat.png')
         self.rect = self.image.get_rect()
         self.rect.y = y
         self.rect.x = x
@@ -132,7 +144,7 @@ class Mouse(pygame.sprite.Sprite):
         self.mouseYSpeed = 0
         self.walls = None
 
-        self.image = pygame.image.load('alien.png')
+        self.image = pygame.image.load('Mouse.png')
         self.rect = self.image.get_rect()
         self.rect.y = y
         self.rect.x = x
@@ -190,7 +202,7 @@ generator2.rect.x = gen2X
 generator2.rect.y = gen2Y
 
 # Game over/restart
-gameOVer = False
+gameOver = False
 
 # Keyboard Variables
 pressed_left = False
@@ -276,8 +288,8 @@ DECWALL.add(wall99,wall80,wall79,wall81,wall98,wall97, wall96,wall95,wall94,wall
 
 # Walls - created a group and add each instance of wall to it.
 WALLS = pygame.sprite.Group()
-# X,Y,Height,Width,Height,Colour,Screen.
 
+# X,Y,Height,Width,Height,Colour,Screen.
 wall1 = wall.Wall(0,0,screenWidth,20,black,screenWindow)                    # top wall
 wall2 = wall.Wall(0,(screenHeight-10),screenWidth,20,black,screenWindow)        # bot wall
 wall3 = wall.Wall(0,0,10,screenHeight,black,screenWindow)                       # Left Wall
@@ -352,24 +364,26 @@ player.walls = WALLS
 
 TESTWALLS = []
 # Width ones
+'''
 def makeWallNodes(x,y,width,height):
     startX = round(x/10)
     startY = round(y/10)
     loopCountW = width/10
-    i = 1
-    while i < loopCountW:
+    i = 0
+    while i <= loopCountW:
 
         startX += 1
         nodeXY = (startX, startY)
         TESTWALLS.append(nodeXY)
         #print(nodeXY)
         i+= 1
+'''
 def makeHeightWallNodes(x,y,width,height):
     startX = round(x/10)
     startY = round(y/10)
     loopCountH = height/10
     i = 0
-    while i < loopCountH:
+    while i <= loopCountH:
 
         startY += 1
         nodeXY = (startX, startY)
@@ -377,11 +391,11 @@ def makeHeightWallNodes(x,y,width,height):
         #print(nodeXY)
         i+= 1
 
-
+# '''
 for wall in WALLS:
     #makeWallNodes(wall.x,wall.y,wall.width,wall.height)
     makeHeightWallNodes(wall.x, wall.y, wall.width, wall.height)
-
+# '''
 
 def drawFloors():
     # pygame.draw.rect(screenWindow,dimGrey,[10,680,300,420])
@@ -512,10 +526,11 @@ def a_star_search(graph, start, goal):
     return came_from, cost_so_far
 
 
-start = ((round(mouseX / 10)), round(mouseY / 10))
 #start = ((round(playerX/10)), round(playerY/10))
 #goal = (playerX/10,playerY/10)
-goal = (10, 10)
+
+start = ((round(mouseX / 10)), round(mouseY / 10))
+goal = ((round(genX / 10)), (round(genY / 10)))
 came_from, cost_so_far = a_star_search(grid, start,goal)
 
 def reconstruct_path(came_from, start, goal):
@@ -530,15 +545,15 @@ def reconstruct_path(came_from, start, goal):
 
 path =  reconstruct_path(came_from,start,goal)
 
-print("A star: ",a_star_search(grid, start, goal))
-print("Path: ",path)
+# print("A star: ",a_star_search(grid, start, goal))
+# print("Path: ",path)
 
 firstNode = path[1]
 
-print("First Node: ", firstNode)
-print("Goal: ", goal)
+# print("First Node: ", firstNode)
+# print("Goal: ", goal)
 
-
+# goal = ((round( / 10), (round(genY / 10))
 
 # # # Main game loop # # #
 running = True
@@ -573,6 +588,10 @@ while running:
     if mouseYNode == firstNodeY:
         #print("Y hit")
         pass
+
+    if mouse.rect.colliderect(generator):
+        print("mouse hit gen")
+        goal = ((round(gen2X / 10)), (round(gen2Y / 10)))
 
 
 
@@ -642,7 +661,7 @@ while running:
             elif event.key == pygame.K_w:
                 pressed_W = True
                 print("Pressed W")
-                print(a_star_search(grid, start, goal))
+
 
                 now = pygame.time.get_ticks()
                 if now - pounceLast >= pounceCooldown:
@@ -655,7 +674,7 @@ while running:
 
 
         elif event.type == TIME:
-            time += 1
+            time -= 1
 
         elif event.type == pygame.KEYUP:  # check for key releases
             if event.key == pygame.K_LEFT:
@@ -725,6 +744,7 @@ while running:
         pass
 
     spikeCollide = False
+    spikeRect = pygame.Rect(spikeX, spikeY, 30, 30)
     if spikeState == "fired":
         shootSpike(spikeX, spikeY)
         spikeX += spikeXSpeed
@@ -745,12 +765,28 @@ while running:
     if player.rect.colliderect(generator2):
         print("Colldinng with no.2 ")
 
+    if player.rect.colliderect(mouse):
+        gameOver = True
+    if mouse.rect.colliderect(spikeRect):
+        gameOver = True
+
+    if time == 0:
+        gameOver = True
+
+    if gameOver == True:
+       # time = 0
+        ShowGameOver(450,300)
+        pass
+
+
     drawGenerator(generator, genX, genY)
     drawGenerator(generator, gen2X,gen2Y)
     player.drawPlayer(playerX,playerY)
     Mouse.drawMouse(mouse, mouseX, mouseY)
     player.rect.x = playerX
     player.rect.y = playerY
+    mouse.rect.x = mouseX
+    mouse.rect.y = mouseY
     for wall in DECWALL:
         wall.draw()
     for wall in WALLS:
@@ -758,4 +794,4 @@ while running:
     showTime(30,30)
 
     pygame.display.update()
-    #clock.tick(60)
+    clock.tick(60)
