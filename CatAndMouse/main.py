@@ -6,7 +6,8 @@ import sys
 import wall
 import character
 import time
-
+from openpyxl import workbook
+from openpyxl import Workbook
 
 import collections
 import heapq
@@ -70,6 +71,23 @@ pygame.time.set_timer(TIME, 1000)
 time = 60
 # Game Over
 gameOverFont = pygame.font.Font('freesansbold.ttf', 64)
+
+# Data handling
+wb = Workbook()
+# Grab the active worksheet
+ws = wb.active
+
+ws['A1'] = "PlayerXPos"
+ws['B1'] = "PlayerYPos"
+ws['C1'] = "MouseXPos"
+ws['D1'] = "MouseYPos"
+ws['E1'] = "Time"
+ws['F1'] = "SpikeActive"
+ws['G1'] = "SpikeXPos"
+ws['H1'] = "SpikeYPos"
+
+wb.save('CatData.csv')
+# ws.append([playerX, playerY,mouseX,mouseY,time,spikeState,spikeX, spikeY ])
 
 def ShowGameOver(x,y):
     gameOverText = gameOverFont.render(("Game Over"),True, (0, 0, 0))
@@ -663,6 +681,7 @@ while running:
                 print("Pressed W")
 
 
+
                 now = pygame.time.get_ticks()
                 if now - pounceLast >= pounceCooldown:
                     pounceLast = now
@@ -675,6 +694,8 @@ while running:
 
         elif event.type == TIME:
             time -= 1
+            ws.append([playerX, playerY, mouseX, mouseY, time, spikeState, spikeX, spikeY])
+
 
         elif event.type == pygame.KEYUP:  # check for key releases
             if event.key == pygame.K_LEFT:
@@ -713,6 +734,7 @@ while running:
         player.rect.x = playerX
         player.rect.y = playerY
         checkForWalls()
+        ws.append([playerX, playerY, mouseX, mouseY, time, spikeState, spikeX, spikeY])
         if player.isCollide == True:
             playerX += player.playerXSpeed
 
@@ -721,6 +743,7 @@ while running:
         player.rect.x = playerX
         player.rect.y = playerY
         checkForWalls()
+        ws.append([playerX, playerY, mouseX, mouseY, time, spikeState, spikeX, spikeY])
         if player.isCollide == True:
             playerX -= player.playerXSpeed
 
@@ -729,6 +752,7 @@ while running:
         player.rect.x = playerX
         player.rect.y = playerY
         checkForWalls()
+        ws.append([playerX, playerY, mouseX, mouseY, time, spikeState, spikeX, spikeY])
         if player.isCollide == True:
             playerY += player.playerYSpeed
 
@@ -737,10 +761,12 @@ while running:
         player.rect.x = playerX
         player.rect.y = playerY
         checkForWalls()
+        ws.append([playerX, playerY, mouseX, mouseY, time, spikeState, spikeX, spikeY])
         if player.isCollide == True:
             playerY -= player.playerYSpeed
 
     if pressed_W:
+        ws.append([playerX, playerY, mouseX, mouseY, time, spikeState, spikeX, spikeY])
         pass
 
     spikeCollide = False
@@ -776,6 +802,8 @@ while running:
     if gameOver == True:
        # time = 0
         ShowGameOver(450,300)
+        wb.save('CatData.csv')
+        mouseX = 5
         pass
 
 
