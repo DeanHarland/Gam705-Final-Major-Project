@@ -545,8 +545,8 @@ def a_star_search(graph, start, goal):
 
 
 #start = ((round(playerX/10)), round(playerY/10))
-#goal = (playerX/10,playerY/10)
 
+#goal = ((round(playerX / 10)), (round(playerY / 10)))
 start = ((round(mouseX / 10)), round(mouseY / 10))
 goal = ((round(genX / 10)), (round(genY / 10)))
 came_from, cost_so_far = a_star_search(grid, start,goal)
@@ -580,13 +580,15 @@ while running:
 
     screenWindow.fill((30, 90, 30))
     drawFloors()
-    #start = ((round(playerX / 10)), round(playerY / 10))
+
     start = ((round(mouseX / 10)), round(mouseY / 10))
     mouseXNode = round(mouseX / 10)
     mouseYNode = round(mouseY / 10)
-
+    start = ((round(mouseX / 10)), round(mouseY / 10))
+    came_from, cost_so_far = a_star_search(grid, start, goal)
     a_star_search(grid,start,goal)
     path = reconstruct_path(came_from, start, goal)
+
     firstNode = path[1]
     firstNodeX, firstNodeY = firstNode
 
@@ -610,8 +612,14 @@ while running:
     if mouse.rect.colliderect(generator):
         print("mouse hit gen")
         goal = ((round(gen2X / 10)), (round(gen2Y / 10)))
+        start = ((round(mouseX / 10)), round(mouseY / 10))
+        came_from, cost_so_far = a_star_search(grid, start, goal)
 
-
+    if mouse.rect.colliderect(generator2):
+        print("mouse hit gen2")
+        goal = ((round(genX / 10)), (round(genY / 10)))
+        start = ((round(mouseX / 10)), round(mouseY / 10))
+        came_from, cost_so_far = a_star_search(grid, start, goal)
 
 
     # Move then remove from array? or just redo a star all the time so its always moving to first node
@@ -679,6 +687,11 @@ while running:
             elif event.key == pygame.K_w:
                 pressed_W = True
                 print("Pressed W")
+                goal = ((round(playerX / 10)), (round(playerY / 10)))
+                start = ((round(mouseX / 10)), round(mouseY / 10))
+                came_from, cost_so_far = a_star_search(grid, start, goal)
+
+
 
 
 
