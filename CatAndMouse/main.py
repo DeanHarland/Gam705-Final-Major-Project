@@ -65,6 +65,9 @@ spikeState = "ready"
 spikePosSpeed = 5
 spikeNegSpeed = -5
 
+# Run away mousey
+runAwayCharges = 1
+canRunAway = True
 
 # Game Over
 gameOverFont = pygame.font.Font('freesansbold.ttf', 64)
@@ -151,6 +154,9 @@ def pounceAbility(x,y,direction):
 # Use current X + pounce distance to determine jump distance? but how to make it jump? speed up?
 # Need sprint stamina for for loop?
 # Which direction? how will it know?
+
+
+
 
 
 
@@ -582,15 +588,15 @@ def reconstruct_path(came_from, start, goal):
 
 path =  reconstruct_path(came_from,start,goal)
 
-# print("A star: ",a_star_search(grid, start, goal))
-# print("Path: ",path)
-
 firstNode = path[1]
 
-# print("First Node: ", firstNode)
-# print("Goal: ", goal)
+def checkDistance(playerX, playerY, mouseX, mouseY):
+    distance = math.sqrt((math.pow(playerX - mouseX, 2)) + (math.pow(playerY- mouseY, 2)))
+    if distance < 200:
+        return True
+    else:
+        return False
 
-# goal = ((round( / 10), (round(genY / 10))
 
 # # # Main game loop # # #
 running = True
@@ -707,10 +713,8 @@ while running:
                     # Pounce
             elif event.key == pygame.K_w:
                 pressed_W = True
-                print("Pressed W")
-                goal = ((round(playerX / 10)), (round(playerY / 10)))
-                start = ((round(mouseX / 10)), round(mouseY / 10))
-                came_from, cost_so_far = a_star_search(grid, start, goal)
+
+
 
 
 
@@ -830,8 +834,35 @@ while running:
     if mouse.rect.colliderect(spikeRect):
         gameOver = True
 
+    #checkDistance(playerX,playerY,mouseX,mouseY)
+    nearEachOther = checkDistance(playerX,playerY,mouseX,mouseY)
+    if nearEachOther:
+        if runAwayCharges == 1:
+            if playerX > mouseX:
+                goal = ((round(genX / 30)), (round(genY / 30)))
+                start = ((round(mouseX / 30)), round(mouseY / 30))
+                came_from, cost_so_far = a_star_search(grid, start, goal)
+                runAwayCharges =- 1
+            elif playerX < mouseX:
+                goal = ((round(gen2X / 30)), (round(gen2Y / 30)))
+                start = ((round(mouseX / 30)), round(mouseY / 30))
+                came_from, cost_so_far = a_star_search(grid, start, goal)
+                runAwayCharges = - 1
+
+
+
+
+
     if timer == 0:
         gameOver = True
+    if timer == 90:
+        runAwayCharges = 1
+    if timer == 80:
+        runAwayCharges = 1
+    if timer == 70:
+        runAwayCharges = 1
+    if timer == 60:
+        runAwayCharges = 1
 
     if gameOver == True:
        # time = 0
