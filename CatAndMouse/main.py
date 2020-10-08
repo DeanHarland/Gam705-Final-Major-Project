@@ -45,7 +45,7 @@ startTime = 0
 # Timer
 TIME = pygame.USEREVENT + 1
 pygame.time.set_timer(TIME, 1000)
-time = 0
+timer = 60
 
 testClock = pygame.time.Clock()
 dt = testClock.tick()
@@ -65,10 +65,7 @@ spikeState = "ready"
 spikePosSpeed = 5
 spikeNegSpeed = -5
 
-# Timer
-TIME = pygame.USEREVENT + 1
-pygame.time.set_timer(TIME, 1000)
-time = 60
+
 # Game Over
 gameOverFont = pygame.font.Font('freesansbold.ttf', 64)
 
@@ -85,9 +82,13 @@ ws['E1'] = "Time"
 ws['F1'] = "SpikeActive"
 ws['G1'] = "SpikeXPos"
 ws['H1'] = "SpikeYPos"
+ws['I1'] = "LeftPressed"
+ws['J1'] = "RightPressed"
+ws['K1'] = "UpPressed"
+ws['L1'] = "DownPressed"
 
 wb.save('CatData.csv')
-# ws.append([playerX, playerY,mouseX,mouseY,time,spikeState,spikeX, spikeY ])
+# ws.append([playerX, playerY,mouseX,mouseY,time,spikeState,spikeX, spikeY, ])
 
 def ShowGameOver(x,y):
     gameOverText = gameOverFont.render(("Game Over"),True, (0, 0, 0))
@@ -382,38 +383,45 @@ player.walls = WALLS
 
 TESTWALLS = []
 # Width ones
-'''
+#'''
 def makeWallNodes(x,y,width,height):
-    startX = round(x/10)
-    startY = round(y/10)
-    loopCountW = width/10
+    startX = round(x/30)
+    startY = round(y/30)
+    loopCountW = round(width/30)
     i = 0
     while i <= loopCountW:
 
-        startX += 1
+        #startX += 1
         nodeXY = (startX, startY)
         TESTWALLS.append(nodeXY)
         #print(nodeXY)
+        startX += 1
         i+= 1
-'''
+
+#'''
 def makeHeightWallNodes(x,y,width,height):
-    startX = round(x/10)
-    startY = round(y/10)
-    loopCountH = height/10
+    startX = round(x/30)
+    startY = round(y/30)
+    loopCountH = round(height/30)
     i = 0
     while i <= loopCountH:
 
-        startY += 1
+        #startY += 1
         nodeXY = (startX, startY)
         TESTWALLS.append(nodeXY)
         #print(nodeXY)
+        startY += 1
         i+= 1
+for wall in WALLS:
+    makeWallNodes(wall.x,wall.y,wall.width,wall.height)
 
 # '''
 for wall in WALLS:
     #makeWallNodes(wall.x,wall.y,wall.width,wall.height)
     makeHeightWallNodes(wall.x, wall.y, wall.width, wall.height)
 # '''
+
+
 
 def drawFloors():
     # pygame.draw.rect(screenWindow,dimGrey,[10,680,300,420])
@@ -459,7 +467,7 @@ def checkForWalls():
 
 
 def showTime(x,y):
-    timeText = font.render("Time: " + str(time),True,(0,0,0))
+    timeText = font.render("Time: " + str(timer),True,(0,0,0))
     screenWindow.blit(timeText,(x,y))
 
 # A Star
@@ -507,8 +515,11 @@ class GridWithWeights(SquareGrid):
         return self.weights.get(to_node, 1)
 
 #NODEWALLS = [(8,82)]
+################################################
 
-grid = GridWithWeights(120, 90 )
+grid = GridWithWeights(40, 30 )
+
+###############################################
 grid.walls = TESTWALLS #NODEWALLS
 
 def heuristic(a, b):
@@ -516,7 +527,7 @@ def heuristic(a, b):
     (x2, y2) = b
     return abs(x1 - x2) + abs(y1 - y2)
 
-
+# test
 def a_star_search(graph, start, goal):
     frontier = PriorityQueue()
     frontier.put(start, 0)
@@ -547,8 +558,8 @@ def a_star_search(graph, start, goal):
 #start = ((round(playerX/10)), round(playerY/10))
 
 #goal = ((round(playerX / 10)), (round(playerY / 10)))
-start = ((round(mouseX / 10)), round(mouseY / 10))
-goal = ((round(genX / 10)), (round(genY / 10)))
+start = ((round(mouseX / 30)), round(mouseY / 30))
+goal = ((round(genX / 30)), (round(genY / 30)))
 came_from, cost_so_far = a_star_search(grid, start,goal)
 
 def reconstruct_path(came_from, start, goal):
@@ -581,10 +592,10 @@ while running:
     screenWindow.fill((30, 90, 30))
     drawFloors()
 
-    start = ((round(mouseX / 10)), round(mouseY / 10))
-    mouseXNode = round(mouseX / 10)
-    mouseYNode = round(mouseY / 10)
-    start = ((round(mouseX / 10)), round(mouseY / 10))
+    start = ((round(mouseX / 30)), round(mouseY / 30))
+    mouseXNode = round(mouseX / 30)
+    mouseYNode = round(mouseY / 30)
+    start = ((round(mouseX / 30)), round(mouseY / 30))
     came_from, cost_so_far = a_star_search(grid, start, goal)
     a_star_search(grid,start,goal)
     path = reconstruct_path(came_from, start, goal)
@@ -611,14 +622,14 @@ while running:
 
     if mouse.rect.colliderect(generator):
         print("mouse hit gen")
-        goal = ((round(gen2X / 10)), (round(gen2Y / 10)))
-        start = ((round(mouseX / 10)), round(mouseY / 10))
+        goal = ((round(gen2X / 30)), (round(gen2Y / 30)))
+        start = ((round(mouseX / 30)), round(mouseY / 30))
         came_from, cost_so_far = a_star_search(grid, start, goal)
 
     if mouse.rect.colliderect(generator2):
         print("mouse hit gen2")
-        goal = ((round(genX / 10)), (round(genY / 10)))
-        start = ((round(mouseX / 10)), round(mouseY / 10))
+        goal = ((round(genX / 30)), (round(genY / 30)))
+        start = ((round(mouseX / 30)), round(mouseY / 30))
         came_from, cost_so_far = a_star_search(grid, start, goal)
 
 
@@ -706,8 +717,8 @@ while running:
 
 
         elif event.type == TIME:
-            time -= 1
-            ws.append([playerX, playerY, mouseX, mouseY, time, spikeState, spikeX, spikeY])
+            timer -= 1
+            ws.append([playerX, playerY, mouseX, mouseY, timer, spikeState, spikeX, spikeY,pressed_left,pressed_right,pressed_up,pressed_down])
 
 
         elif event.type == pygame.KEYUP:  # check for key releases
@@ -747,7 +758,7 @@ while running:
         player.rect.x = playerX
         player.rect.y = playerY
         checkForWalls()
-        ws.append([playerX, playerY, mouseX, mouseY, time, spikeState, spikeX, spikeY])
+        ws.append([playerX, playerY, mouseX, mouseY, timer, spikeState, spikeX, spikeY,pressed_left,pressed_right,pressed_up,pressed_down])
         if player.isCollide == True:
             playerX += player.playerXSpeed
 
@@ -756,7 +767,7 @@ while running:
         player.rect.x = playerX
         player.rect.y = playerY
         checkForWalls()
-        ws.append([playerX, playerY, mouseX, mouseY, time, spikeState, spikeX, spikeY])
+        ws.append([playerX, playerY, mouseX, mouseY, timer, spikeState, spikeX, spikeY,pressed_left,pressed_right,pressed_up,pressed_down])
         if player.isCollide == True:
             playerX -= player.playerXSpeed
 
@@ -765,7 +776,7 @@ while running:
         player.rect.x = playerX
         player.rect.y = playerY
         checkForWalls()
-        ws.append([playerX, playerY, mouseX, mouseY, time, spikeState, spikeX, spikeY])
+        ws.append([playerX, playerY, mouseX, mouseY, timer, spikeState, spikeX, spikeY,pressed_left,pressed_right,pressed_up,pressed_down])
         if player.isCollide == True:
             playerY += player.playerYSpeed
 
@@ -774,12 +785,12 @@ while running:
         player.rect.x = playerX
         player.rect.y = playerY
         checkForWalls()
-        ws.append([playerX, playerY, mouseX, mouseY, time, spikeState, spikeX, spikeY])
+        ws.append([playerX, playerY, mouseX, mouseY, timer, spikeState, spikeX, spikeY,pressed_left,pressed_right,pressed_up,pressed_down])
         if player.isCollide == True:
             playerY -= player.playerYSpeed
 
     if pressed_W:
-        ws.append([playerX, playerY, mouseX, mouseY, time, spikeState, spikeX, spikeY])
+        ws.append([playerX, playerY, mouseX, mouseY, timer, spikeState, spikeX, spikeY,pressed_left,pressed_right,pressed_up,pressed_down])
         pass
 
     spikeCollide = False
@@ -809,14 +820,17 @@ while running:
     if mouse.rect.colliderect(spikeRect):
         gameOver = True
 
-    if time == 0:
+    if timer == 0:
         gameOver = True
 
     if gameOver == True:
        # time = 0
         ShowGameOver(450,300)
         wb.save('CatData.csv')
-        mouseX = 5
+        mouseX = 0
+        mouseY = 0
+        time.sleep(1)
+        exit()
         pass
 
 
