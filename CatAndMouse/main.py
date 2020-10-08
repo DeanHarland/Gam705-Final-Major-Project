@@ -36,7 +36,7 @@ blue = (51,153,255)
 darkBlue = (51,153,200)
 treeGreen = (0,153,0)
 pink = (255,105,180)
-
+red = (255,0,0)
 # UI
 font = pygame.font.Font('freesansbold.ttf', 26)
 textX = 10
@@ -45,7 +45,7 @@ startTime = 0
 # Timer
 TIME = pygame.USEREVENT + 1
 pygame.time.set_timer(TIME, 1000)
-timer = 60
+timer = 100
 
 testClock = pygame.time.Clock()
 dt = testClock.tick()
@@ -198,7 +198,7 @@ genY = 50
 generator = Generator(30,30)
 generator.rect.x = genX
 generator.rect.y = genY
-
+genActive = False
 class Generator2(pygame.sprite.Sprite):
     def __init__(self,x,y):
 
@@ -219,7 +219,7 @@ gen2Y = 775
 generator2 = Generator2(30,30)
 generator2.rect.x = gen2X
 generator2.rect.y = gen2Y
-
+gen2Active = False
 # Game over/restart
 gameOver = False
 
@@ -450,6 +450,14 @@ def drawFloors():
     pygame.draw.rect(screenWindow, dimGrey, [1140, 765, 50, 50])
     # flowers?
 
+    #generator lights
+    pygame.draw.rect(screenWindow, red, [genX, genY - 5, 25, 10])
+    if genActive == True:
+        pygame.draw.rect(screenWindow, treeGreen, [genX, genY - 5, 25, 10])
+
+    pygame.draw.rect(screenWindow, red, [gen2X, gen2Y - 5, 25, 10])
+    if gen2Active == True:
+        pygame.draw.rect(screenWindow, treeGreen, [gen2X, gen2Y - 5, 25, 10])
 
     # Shop
     pygame.draw.rect(screenWindow, (20, 69, 20), [150, 350, 160, 200])
@@ -625,13 +633,15 @@ while running:
         goal = ((round(gen2X / 30)), (round(gen2Y / 30)))
         start = ((round(mouseX / 30)), round(mouseY / 30))
         came_from, cost_so_far = a_star_search(grid, start, goal)
+        genActive = True
+
 
     if mouse.rect.colliderect(generator2):
         print("mouse hit gen2")
         goal = ((round(genX / 30)), (round(genY / 30)))
         start = ((round(mouseX / 30)), round(mouseY / 30))
         came_from, cost_so_far = a_star_search(grid, start, goal)
-
+        gen2Active = True
 
     # Move then remove from array? or just redo a star all the time so its always moving to first node
 
@@ -811,9 +821,9 @@ while running:
                 spikeCollide = False
 
     if player.rect.colliderect(generator):
-        print("Colldinng with no.1 ")
+        genActive = False
     if player.rect.colliderect(generator2):
-        print("Colldinng with no.2 ")
+        gen2Active = False
 
     if player.rect.colliderect(mouse):
         gameOver = True
