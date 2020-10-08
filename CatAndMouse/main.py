@@ -226,6 +226,27 @@ generator2 = Generator2(30,30)
 generator2.rect.x = gen2X
 generator2.rect.y = gen2Y
 gen2Active = False
+
+
+class Generator3(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+
+        super().__init__()
+        activated = False
+        completed = False
+        self.image = pygame.image.load('generator.png')
+        self.rect = self.image.get_rect()
+        self.rect.y = y
+        self.rect.x = x
+
+
+gen3X = 100
+gen3Y = 850
+generator3 = Generator3(30,30)
+generator3.rect.x = gen3X
+generator3.rect.y = gen3Y
+
+
 # Game over/restart
 gameOver = False
 
@@ -576,6 +597,11 @@ start = ((round(mouseX / 30)), round(mouseY / 30))
 goal = ((round(genX / 30)), (round(genY / 30)))
 came_from, cost_so_far = a_star_search(grid, start,goal)
 
+# nodes
+#goal = ((round(gen2X / 30)), (round(gen2Y / 30)))
+# goal = ((round(1000 / 30)), (round(450 / 30)))
+
+
 def reconstruct_path(came_from, start, goal):
     current = goal
     path = []
@@ -635,7 +661,7 @@ while running:
         pass
 
     if mouse.rect.colliderect(generator):
-        print("mouse hit gen")
+
         goal = ((round(gen2X / 30)), (round(gen2Y / 30)))
         start = ((round(mouseX / 30)), round(mouseY / 30))
         came_from, cost_so_far = a_star_search(grid, start, goal)
@@ -643,11 +669,19 @@ while running:
 
 
     if mouse.rect.colliderect(generator2):
-        print("mouse hit gen2")
-        goal = ((round(genX / 30)), (round(genY / 30)))
+
+        goal = ((round(gen3X / 30)), (round(gen3Y / 30)))
         start = ((round(mouseX / 30)), round(mouseY / 30))
         came_from, cost_so_far = a_star_search(grid, start, goal)
         gen2Active = True
+
+    if mouse.rect.colliderect(generator3):
+
+        goal = ((round(genX / 30)), (round(genY / 30)))
+        start = ((round(mouseX / 30)), round(mouseY / 30))
+        came_from, cost_so_far = a_star_search(grid, start, goal)
+
+
 
     # Move then remove from array? or just redo a star all the time so its always moving to first node
 
