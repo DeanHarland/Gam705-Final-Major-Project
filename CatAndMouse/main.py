@@ -246,6 +246,25 @@ generator3 = Generator3(30,30)
 generator3.rect.x = gen3X
 generator3.rect.y = gen3Y
 
+class Generator4(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+
+        super().__init__()
+        activated = False
+        completed = False
+        self.image = pygame.image.load('generator.png')
+        self.rect = self.image.get_rect()
+        self.rect.y = y
+        self.rect.x = x
+
+
+gen4X = 1050
+gen4Y = 350
+generator4 = Generator4(30,30)
+generator4.rect.x = gen4X
+generator4.rect.y = gen4Y
+
+
 
 # Game over/restart
 gameOver = False
@@ -327,7 +346,7 @@ wall61 = wall.Wall((screenWidth/4-110)-5,(screenHeight/4*3)-5,120,35,black,scree
 
 wall60 = wall.Wall((screenWidth/4-100)-5,(screenHeight/4*3+90)-5,35,90,black,screenWindow)
 
-DECWALL.add(wall99,wall80,wall79,wall81,wall98,wall97, wall96,wall95,wall94,wall93,wall92,wall91,wall90,wall89,wall88,wall87,wall86,wall85,wall84,wall83,wall82, wall78,wall77, wall76,wall75,wall74,wall73,wall72,wall71,wall70,
+DECWALL.add(wall99,wall80,wall79,wall81,wall98,wall97, wall96,wall95,wall94,wall92,wall91,wall90,wall89,wall88,wall87,wall86,wall85,wall84,wall83,wall82, wall78,wall77, wall76,wall75,wall74,wall73,wall72,wall71,wall70,
             wall69,wall68, wall67,wall66, wall65,wall64,wall63,wall62,wall61,wall60)
 
 
@@ -404,7 +423,7 @@ wall45 = wall.Wall(150,450,20,70,black,screenWindow)
 # 46 used
 # 47used
 
-WALLS.add(wall1,wall2,wall3,wall4,wall5,wall14,wall15,wall25,wall26,wall22,wall24,wall28,wall21,wall23,wall10,wall11, wall12, wall17,wall18,wall19,wall20,wall13,wall16, wall27,wall28,wall29,wall30,wall31,wall32, wall33,wall34
+WALLS.add(wall1,wall2,wall3,wall4,wall5,wall14,wall15,wall25,wall26,wall22,wall24,wall28,wall21,wall23,wall10,wall12, wall17,wall18,wall19,wall20,wall13,wall16, wall27,wall28,wall29,wall30,wall31,wall32, wall33,wall34
           ,wall35,wall36,wall37,wall38,wall39,wall40,wall41, wall42,wall43,wall44,wall45,wall46,wall47)
 player.walls = WALLS
 
@@ -661,25 +680,57 @@ while running:
         pass
 
     if mouse.rect.colliderect(generator):
-
-        goal = ((round(gen2X / 30)), (round(gen2Y / 30)))
-        start = ((round(mouseX / 30)), round(mouseY / 30))
-        came_from, cost_so_far = a_star_search(grid, start, goal)
-        genActive = True
+        if playerX > mouseX:
+            goal = ((round(gen3X / 30)), (round(gen3Y / 30)))
+            start = ((round(mouseX / 30)), round(mouseY / 30))
+            came_from, cost_so_far = a_star_search(grid, start, goal)
+            genActive = True
+        elif playerX <= mouseX:
+            goal = ((round(gen4X / 30)), (round(gen4Y / 30)))
+            start = ((round(mouseX / 30)), round(mouseY / 30))
+            came_from, cost_so_far = a_star_search(grid, start, goal)
+            genActive = True
 
 
     if mouse.rect.colliderect(generator2):
+        if playerY < mouseY and playerX > screenWidth/2:
+            goal = ((round(gen3X / 30)), (round(gen3Y / 30)))
+            start = ((round(mouseX / 30)), round(mouseY / 30))
+            came_from, cost_so_far = a_star_search(grid, start, goal)
+            gen2Active = True
+        if playerY > screenHeight/2 and playerX < mouseX:
+            goal = ((round(gen4X / 30)), (round(gen4Y / 30)))
+            start = ((round(mouseX / 30)), round(mouseY / 30))
+            came_from, cost_so_far = a_star_search(grid, start, goal)
+            gen2Active = True
+        else:
+            goal = ((round(gen3X / 30)), (round(gen3Y / 30)))
+            start = ((round(mouseX / 30)), round(mouseY / 30))
+            came_from, cost_so_far = a_star_search(grid, start, goal)
+            gen2Active = True
 
-        goal = ((round(gen3X / 30)), (round(gen3Y / 30)))
-        start = ((round(mouseX / 30)), round(mouseY / 30))
-        came_from, cost_so_far = a_star_search(grid, start, goal)
-        gen2Active = True
+
 
     if mouse.rect.colliderect(generator3):
+        if playerY < mouseY and playerX < screenWidth/2:
+            goal = ((round(gen2X / 30)), (round(gen2Y / 30)))
+            start = ((round(mouseX / 30)), round(mouseY / 30))
+            came_from, cost_so_far = a_star_search(grid, start, goal)
 
-        goal = ((round(genX / 30)), (round(genY / 30)))
-        start = ((round(mouseX / 30)), round(mouseY / 30))
-        came_from, cost_so_far = a_star_search(grid, start, goal)
+        else:
+            goal = ((round(genX / 30)), (round(genY / 30)))
+            start = ((round(mouseX / 30)), round(mouseY / 30))
+            came_from, cost_so_far = a_star_search(grid, start, goal)
+
+    if mouse.rect.colliderect(generator4):
+        if playerY > mouseY and playerX > screenHeight/2:
+            goal = ((round(genX / 30)), (round(genY / 30)))
+            start = ((round(mouseX / 30)), round(mouseY / 30))
+            came_from, cost_so_far = a_star_search(grid, start, goal)
+        else:
+            goal = ((round(gen2X / 30)), (round(gen2Y / 30)))
+            start = ((round(mouseX / 30)), round(mouseY / 30))
+            came_from, cost_so_far = a_star_search(grid, start, goal)
 
 
 
@@ -872,16 +923,26 @@ while running:
     nearEachOther = checkDistance(playerX,playerY,mouseX,mouseY)
     if nearEachOther:
         if runAwayCharges == 1:
-            if playerX > mouseX:
+            if playerX > mouseX and playerY > mouseY: # Bottom Right
                 goal = ((round(genX / 30)), (round(genY / 30)))
                 start = ((round(mouseX / 30)), round(mouseY / 30))
                 came_from, cost_so_far = a_star_search(grid, start, goal)
                 runAwayCharges =- 1
-            elif playerX < mouseX:
-                goal = ((round(gen2X / 30)), (round(gen2Y / 30)))
+            if playerX < mouseX and playerY > mouseY: # Bottom Left
+                goal = ((round(gen4X / 30)), (round(gen4Y / 30)))
                 start = ((round(mouseX / 30)), round(mouseY / 30))
                 came_from, cost_so_far = a_star_search(grid, start, goal)
                 runAwayCharges = - 1
+            if playerX > mouseX and playerY < mouseY: # Top Right
+                goal = ((round(gen3X / 30)), (round(gen3Y / 30)))
+                start = ((round(mouseX / 30)), round(mouseY / 30))
+                came_from, cost_so_far = a_star_search(grid, start, goal)
+                runAwayCharges =- 1
+            if playerX < mouseX and playerY < mouseY: # Top Left
+                goal = ((round(gen2X / 30)), (round(gen2Y / 30)))
+                start = ((round(mouseX / 30)), round(mouseY / 30))
+                came_from, cost_so_far = a_star_search(grid, start, goal)
+                runAwayCharges =- 1
 
 
 
